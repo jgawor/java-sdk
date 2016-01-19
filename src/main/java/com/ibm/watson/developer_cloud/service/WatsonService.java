@@ -63,9 +63,21 @@ public abstract class WatsonService {
    */
   public WatsonService(String name) {
     this.name = name;
-    this.apiKey = BluemixUtils.getAPIKey(name);
+    this.apiKey = lookupApiKey(name);
     this.client = configureHttpClient();
   }
+ 
+    private String lookupApiKey(String name) {
+        try {
+            javax.naming.Context context = new  javax.naming.InitialContext();
+            String lookupName = "watson/" + name + "/apiKey";
+            String apiKey = (String) context.lookup(lookupName);
+            return apiKey;
+        } catch (javax.naming.NamingException e) {
+            // ignore 
+            return null;
+        }
+    }
 
 
   /**
